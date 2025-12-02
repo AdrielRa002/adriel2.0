@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Archivos 3D Médicos – Plataforma</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      --bg-page: #f2f4f8;
+      --bg-card: #ffffff;
+      --bg-main: #f8fafc;
+      --primary: #2563eb;
+      --primary-soft: #e0edff;
+      --text-main: #111827;
+      --text-soft: #6b7280;
+      --border-soft: #e5e7eb;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --warning: #f97316;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.12);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #e5edff 0, #f9fafb 38%, #eef2ff 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 1240px;
+      background: linear-gradient(180deg, #0f172a 0, #111827 32%, #020617 100%);
+      border-radius: 28px;
+      padding: 1.6rem 1.6rem 1.8rem;
+      box-shadow: 0 32px 80px rgba(15, 23, 42, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top left, rgba(59,130,246,.28), transparent 55%),
+                  radial-gradient(circle at top right, rgba(129,140,248,.26), transparent 55%);
+      opacity: .75;
+      pointer-events: none;
+    }
+
+    .shell-inner {
+      position: relative;
+      background: var(--bg-main);
+      border-radius: 22px;
+      padding: 1.4rem 1.4rem 1.6rem;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(148,163,184,.35);
+    }
+
+    /* Barra superior */
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #2563eb, #1d4ed8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #eff6ff;
+      font-weight: 700;
+      font-size: 1.1rem;
+      box-shadow: 0 10px 25px rgba(37,99,235,.4);
+    }
+
+    .brand-text-title {
+      font-size: 1.02rem;
+      font-weight: 700;
+      letter-spacing: .03em;
+    }
+
+    .brand-text-sub {
+      font-size: .78rem;
+      color: var(--text-soft);
+      line-height: 1.1;
+    }
+
+    .nav {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav button {
+      border: none;
+      background: transparent;
+      padding: .45rem .85rem;
+      border-radius: 999px;
+      font-size: .8rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      color: var(--text-soft);
+      cursor: pointer;
+      transition: all .18s ease-out;
+    }
+
+    .nav button span.dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #cbd5f5;
+    }
+
+    .nav button.active {
+      background: #e0ebff;
+      color: #1d4ed8;
+      font-weight: 600;
+    }
+
+    .nav button.active span.dot {
+      background: #2563eb;
+    }
+
+    /* Buscador */
+
+    .search-row {
+      margin-top: .2rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      flex: 1 1 260px;
+      background: #f9fafb;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      display: flex;
+      align-items: center;
+      padding: .45rem .85rem;
+      box-shadow: 0 10px 25px rgba(15,23,42,.04);
+    }
+
+    .search-icon {
+      font-size: 1.1rem;
+      color: var(--text-soft);
+      margin-right: .4rem;
+    }
+
+    .search-box input {
+      border: none;
+      outline: none;
+      background: transparent;
+      width: 100%;
+      font-size: .9rem;
+      color: var(--text-main);
+    }
+
+    .search-box input::placeholder {
+      color: #9ca3af;
+    }
+
+    .user-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      padding: .4rem .75rem;
+      border-radius: 999px;
+      background: #e0edff;
+      color: #1d4ed8;
+      font-size: .78rem;
+      cursor: default;
+    }
+
+    .user-pill-avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: linear-gradient(135deg,#60a5fa,#4f46e5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #eff6ff;
+      font-size: .75rem;
+      font-weight: 600;
+    }
+
+    /* Layout principal */
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.2fr);
+      gap: 1rem;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Módulo repositorio (izquierda) */
+
+    .panel {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 14px 32px rgba(15,23,42,.08);
+      min-height: 260px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: .7rem;
+      gap: .4rem;
+    }
+
+    .panel-title {
+      font-size: .95rem;
+      font-weight: 700;
+    }
+
+    .panel-sub {
+      font-size: .76rem;
+      color: var(--text-soft);
+    }
+
+    .panel-badge {
+      font-size: .7rem;
+      padding: .2rem .6rem;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #4338ca;
+      font-weight: 500;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: .7rem;
+      margin-top: .4rem;
+    }
+
+    .card {
+      background: #f9fafb;
+      border-radius: var(--radius-md);
+      padding: .7rem .7rem .75rem;
+      border: 1px solid #e5e7eb;
+      cursor: pointer;
+      transition: all .2s ease-out;
+      display: flex;
+      flex-direction: column;
+      gap: .35rem;
+    }
+
+    .card:hover {
+      border-color: #bfdbfe;
+      box-shadow: 0 14px 32px rgba(37,99,235,.22);
+      transform: translateY(-2px);
+      background: #ffffff;
+    }
+
+    .card-thumb {
+      height: 82px;
+      border-radius: 12px;
+      background: radial-gradient(circle at 20% 0, #bfdbfe 0, #dbeafe 28%, #eff6ff 75%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: .2rem;
+    }
+
+    .card-thumb-shape {
+      width: 70%;
+      height: 52%;
+      border-radius: 999px;
+      background: linear-gradient(145deg,#3b82f6,#2563eb);
+      box-shadow: 0 16px 30px rgba(37,99,235,.4);
+      position: relative;
+    }
+
+    .card-thumb-shape::after {
+      content: "";
+      position: absolute;
+      right: -18%;
+      top: 18%;
+      width: 50%;
+      height: 64%;
+      border-radius: 999px;
+      background: linear-gradient(135deg,#60a5fa,#1d4ed8);
+      box-shadow: 0 12px 22px rgba(37,99,235,.5);
+    }
+
+    .card-name {
+      font-size: .9rem;
+      font-weight: 600;
+    }
+
+    .card-meta {
+      font-size: .76rem;
+      color: var(--text-soft);
+    }
+
+    .status-pill {
+      align-self: flex-start;
+      font-size: .7rem;
+      padding: .18rem .6rem;
+      border-radius: 999px;
+      background: #dcfce7;
+      color: #15803d;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: .25rem;
+      margin-top: .15rem;
+    }
+
+    .status-pill::before {
+      content: "✓";
+      font-size: .75rem;
+    }
+
+    /* Panel derecho: vistas */
+
+    .view {
+      display: none;
+      height: 100%;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    .detail-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+      gap: .7rem;
+      margin-top: .4rem;
+    }
+
+    @media (max-width: 800px) {
+      .detail-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .detail-main,
+    .detail-side {
+      background: #f9fafb;
+      border-radius: var(--radius-md);
+      padding: .75rem;
+      border: 1px solid var(--border-soft);
+    }
+
+    .detail-main {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .5rem;
+    }
+
+    .detail-main-item {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: .55rem;
+      border: 1px solid #e5e7eb;
+    }
+
+    .detail-main-item.large {
+      grid-column: span 2;
+      height: 150px;
+      background: radial-gradient(circle at 18% 0, #bfdbfe 0, #dbeafe 30%, #eff6ff 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .detail-shape {
+      width: 58%;
+      height: 54%;
+      border-radius: 999px;
+      background: linear-gradient(135deg,#3b82f6,#1e40af);
+      box-shadow: 0 18px 30px rgba(37,99,235,.5);
+      position: relative;
+    }
+
+    .detail-shape::after {
+      content: "";
+      position: absolute;
+      right: -24%;
+      top: 24%;
+      width: 60%;
+      height: 64%;
+      border-radius: 999px;
+      background: linear-gradient(145deg,#60a5fa,#2563eb);
+      box-shadow: 0 18px 30px rgba(37,99,235,.55);
+    }
+
+    .detail-sketch {
+      height: 90px;
+      border-radius: 10px;
+      border: 1px dashed #bfdbfe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .75rem;
+      color: #60a5fa;
+      background: #eff6ff;
+    }
+
+    .detail-side-title {
+      font-size: .95rem;
+      font-weight: 700;
+      margin-bottom: .25rem;
+    }
+
+    .detail-side-meta {
+      font-size: .8rem;
+      color: var(--text-soft);
+      margin-bottom: .2rem;
+    }
+
+    dl {
+      margin: .25rem 0 .65rem;
+    }
+
+    dt {
+      font-size: .78rem;
+      color: #6b7280;
+    }
+
+    dd {
+      font-size: .85rem;
+      font-weight: 600;
+      margin-bottom: .25rem;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: .35rem;
+      margin-top: .35rem;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: .4rem .8rem;
+      font-size: .82rem;
+      cursor: pointer;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .35rem;
+      transition: transform .12s ease-out, box-shadow .12s ease-out, background .12s ease-out;
+      color: #f9fafb;
+    }
+
+    .btn-primary { background: #16a34a; box-shadow: 0 8px 18px rgba(22,163,74,.35); }
+    .btn-blue { background: #2563eb; box-shadow: 0 8px 18px rgba(37,99,235,.35); }
+    .btn-amber { background: #f97316; box-shadow: 0 8px 18px rgba(249,115,22,.35); }
+    .btn-disabled {
+      background: #e5e7eb;
+      color: #9ca3af;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .btn:not(.btn-disabled):hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(15,23,42,.25);
+    }
+
+    .badge-soft {
+      display: inline-flex;
+      align-items: center;
+      gap: .25rem;
+      border-radius: 999px;
+      padding: .16rem .55rem;
+      background: #e0f2fe;
+      color: #0369a1;
+      font-size: .7rem;
+      font-weight: 500;
+      margin-top: .2rem;
+    }
+
+    .section-title {
+      font-size: .95rem;
+      font-weight: 700;
+      margin-bottom: .3rem;
+    }
+
+    .section-text {
+      font-size: .8rem;
+      color: var(--text-soft);
+    }
+
+    /* Registro */
+
+    .form-card {
+      background: #f9fafb;
+      border-radius: var(--radius-md);
+      padding: .85rem;
+      border: 1px solid var(--border-soft);
+      max-width: 360px;
+    }
+
+    .form-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: .4rem;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: .45rem;
+    }
+
+    .form-label {
+      font-size: .78rem;
+      color: var(--text-soft);
+      margin-bottom: .15rem;
+      display: block;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: .38rem .7rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      font-size: .8rem;
+      outline: none;
+      background: #ffffff;
+    }
+
+    .form-input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 1px rgba(37,99,235,.22);
+    }
+
+    .form-footer {
+      margin-top: .35rem;
+      font-size: .74rem;
+      color: var(--text-soft);
+      text-align: center;
+    }
+
+    /* Preferencias */
+
+    .prefs-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: .7rem;
+    }
+
+    @media (max-width: 800px) {
+      .prefs-grid { grid-template-columns: 1fr; }
+    }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: .8rem;
+      padding: .3rem 0;
+    }
+
+    .toggle-label {
+      max-width: 70%;
+      color: var(--text-soft);
+    }
+
+    .chip-group {
+      display: inline-flex;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      overflow: hidden;
+      background: #f3f4f6;
+      margin-top: .25rem;
+    }
+
+    .chip {
+      padding: .28rem .8rem;
+      font-size: .78rem;
+      border-right: 1px solid #e5e7eb;
+      cursor: pointer;
+      color: var(--text-soft);
+    }
+
+    .chip:last-child { border-right: none; }
+
+    .chip.active {
+      background: #2563eb;
+      color: #eff6ff;
+      font-weight: 600;
+    }
+
+    .switch {
+      width: 40px;
+      height: 22px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      padding: 2px;
+      display: flex;
+      align-items: center;
+    }
+
+    .switch-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: #ffffff;
+      box-shadow: 0 1px 4px rgba(15,23,42,.35);
+      transform: translateX(0);
+      transition: transform .16s ease-out, background .16s ease-out;
+    }
+
+    .switch.on {
+      background: #2563eb;
+    }
+
+    .switch.on .switch-thumb {
+      transform: translateX(16px);
+      background: #eff6ff;
+    }
+
+    /* Historial */
+
+    .history-list {
+      margin-top: .5rem;
+      display: flex;
+      flex-direction: column;
+      gap: .4rem;
+    }
+
+    .history-item {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: .6rem;
+      padding: .4rem .6rem;
+      background: #f9fafb;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      font-size: .8rem;
+      align-items: center;
+    }
+
+    .history-badge {
+      min-width: 42px;
+      text-align: center;
+      padding: .2rem .4rem;
+      border-radius: 999px;
+      font-size: .72rem;
+      font-weight: 600;
+      color: #f9fafb;
+    }
+
+    .badge-stl { background: #2563eb; }
+    .badge-step { background: #0d9488; }
+    .badge-obj { background: #f97316; }
+    .badge-pdf { background: #dc2626; }
+
+    .history-meta {
+      color: var(--text-soft);
+      font-size: .75rem;
+    }
+
+    .history-date {
+      font-size: .72rem;
+      color: #9ca3af;
+      text-align: right;
+    }
+
+    .btn-outline {
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      background: #ffffff;
+      padding: .28rem .7rem;
+      font-size: .76rem;
+      cursor: pointer;
+    }
+
+    /* Footer */
+
+    .footer {
+      margin-top: 1.1rem;
+      font-size: .72rem;
+      color: #9ca3af;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="shell-inner">
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="brand">
+          <div class="brand-icon">3D</div>
+          <div>
+            <div class="brand-text-title">Archivos 3D Médicos</div>
+            <div class="brand-text-sub">
+              Plataforma para distribución de piezas médicas en 3D
+            </div>
+          </div>
+        </div>
+
+        <div class="nav">
+          <button class="active" data-view="view-repo"><span class="dot"></span>Repositorio</button>
+          <button data-view="view-detalle"><span class="dot"></span>Detalle de pieza</button>
+          <button data-view="view-historial"><span class="dot"></span>Historial</button>
+          <button data-view="view-preferencias"><span class="dot"></span>Preferencias</button>
+          <button data-view="view-registro"><span class="dot"></span>Registro</button>
+        </div>
+      </div>
+
+      <!-- Buscador -->
+      <div class="search-row">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input id="searchInput" type="text" placeholder="Buscar piezas médicas..." />
+        </div>
+        <div class="user-pill">
+          <div class="user-pill-avatar">EA</div>
+          <span>Sesión de demostración · Tesis</span>
+        </div>
+      </div>
+
+      <!-- Layout principal -->
+      <div class="layout">
+        <!-- Panel repositorio -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Piezas disponibles</div>
+              <div class="panel-sub">
+                Catálogo de ejemplos para la plataforma digital de tu tesis.
+              </div>
+            </div>
+            <span class="panel-badge" id="piecesCount">0 piezas</span>
+          </div>
+
+          <div class="cards" id="cardsContainer">
+            <!-- Tarjetas generadas por JS -->
+          </div>
+        </div>
+
+        <!-- Panel derecho: vistas -->
+        <div class="panel">
+          <!-- Vista detalle -->
+          <div class="view active" id="view-detalle">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title" id="detailTitle">Conector</div>
+                <div class="panel-sub" id="detailSubtitle">
+                  Material ABS · Fabricación mediante Control Numérico Computacional
+                </div>
+              </div>
+              <span class="badge-soft">Vista de detalle</span>
+            </div>
+
+            <div class="detail-layout">
+              <div class="detail-main">
+                <div class="detail-main-item large">
+                  <div class="detail-shape"></div>
+                </div>
+                <div class="detail-main-item">
+                  <div class="detail-sketch">Vista isométrica simulada</div>
+                </div>
+                <div class="detail-main-item">
+                  <div class="detail-sketch">Plano con cotas aproximadas</div>
+                </div>
+              </div>
+              <div class="detail-side">
+                <div class="detail-side-title" id="detailNameSide">Conector</div>
+                <div class="detail-side-meta" id="detailMetaSide">
+                  Material: ABS · Proceso: Control Numérico Computacional
+                </div>
+
+                <dl>
+                  <dt>Dimensiones de referencia</dt>
+                  <dd id="detailDims">50 × 34 × 24 mm</dd>
+                  <dt>Equipo médico</dt>
+                  <dd id="detailEquipo">Bomba de infusión</dd>
+                  <dt>Uso principal</dt>
+                  <dd id="detailUso">
+                    Unión segura entre circuito de fluido y módulo de bombeo.
+                  </dd>
+                </dl>
+
+                <div class="btn-group">
+                  <button class="btn btn-primary">Descargar STL</button>
+                  <button class="btn btn-blue">Descargar STEP</button>
+                  <button class="btn btn-amber">Descargar OBJ</button>
+                  <button class="btn btn-disabled">Manual PDF (en preparación)</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vista preferencias -->
+          <div class="view" id="view-preferencias">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Preferencias de la plataforma</div>
+                <div class="panel-sub">Ajustes simulados para usuarios técnicos.</div>
+              </div>
+              <span class="badge-soft">Configuración</span>
+            </div>
+
+            <div class="prefs-grid">
+              <div class="detail-side">
+                <div class="section-title">Idioma y formatos</div>
+                <div class="section-text">
+                  Estos parámetros permiten personalizar cómo se descargan y visualizan
+                  los archivos de piezas médicas dentro de la plataforma.
+                </div>
+
+                <div class="form-group" style="margin-top:.55rem;">
+                  <label class="form-label">Idioma de la interfaz</label>
+                  <select class="form-input" style="border-radius:12px;">
+                    <option>Español</option>
+                    <option>Inglés</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Formato de descarga preferido</label>
+                  <div class="chip-group">
+                    <div class="chip active">STL</div>
+                    <div class="chip">STEP</div>
+                    <div class="chip">OBJ</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="detail-side">
+                <div class="section-title">Notificaciones y privacidad</div>
+
+                <div class="toggle-row">
+                  <div class="toggle-label">
+                    Notificaciones por correo cuando se publique una nueva pieza.
+                  </div>
+                  <div class="switch on">
+                    <div class="switch-thumb"></div>
+                  </div>
+                </div>
+
+                <div class="toggle-row">
+                  <div class="toggle-label">
+                    Alertas dentro de la plataforma ante revisiones de seguridad.
+                  </div>
+                  <div class="switch on">
+                    <div class="switch-thumb"></div>
+                  </div>
+                </div>
+
+                <div class="toggle-row">
+                  <div class="toggle-label">
+                    Compartir datos de perfil con otras instituciones participantes.
+                  </div>
+                  <div class="switch">
+                    <div class="switch-thumb"></div>
+                  </div>
+                </div>
+
+                <button class="btn btn-blue" style="margin-top:.65rem;width:100%;">
+                  Guardar cambios (demostración)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vista historial -->
+          <div class="view" id="view-historial">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Historial de descargas</div>
+                <div class="panel-sub">
+                  Ejemplo de trazabilidad de archivos descargados desde la plataforma.
+                </div>
+              </div>
+              <button class="btn-outline">Borrar todo</button>
+            </div>
+
+            <div class="section-title">Hoy</div>
+            <div class="history-list">
+              <div class="history-item">
+                <div class="history-badge badge-stl">STL</div>
+                <div>
+                  <div>Conector_v1.stl</div>
+                  <div class="history-meta">
+                    Plataforma Archivos 3D Médicos · Control Numérico Computacional
+                  </div>
+                </div>
+                <div class="history-date">03/10/2025 · 14:32</div>
+              </div>
+            </div>
+
+            <div class="section-title" style="margin-top:.6rem;">Ayer</div>
+            <div class="history-list">
+              <div class="history-item">
+                <div class="history-badge badge-step">STEP</div>
+                <div>
+                  <div>Adaptador.step</div>
+                  <div class="history-meta">
+                    Plataforma Archivos 3D Médicos
+                  </div>
+                </div>
+                <div class="history-date">02/10/2025 · 09:25</div>
+              </div>
+              <div class="history-item">
+                <div class="history-badge badge-obj">OBJ</div>
+                <div>
+                  <div>Conector_v1.obj</div>
+                  <div class="history-meta">
+                    Plataforma Archivos 3D Médicos
+                  </div>
+                </div>
+                <div class="history-date">02/10/2025 · 07:46</div>
+              </div>
+            </div>
+
+            <div class="section-title" style="margin-top:.6rem;">Semana pasada</div>
+            <div class="history-list">
+              <div class="history-item">
+                <div class="history-badge badge-pdf">PDF</div>
+                <div>
+                  <div>Manual_Brida.pdf</div>
+                  <div class="history-meta">
+                    Plataforma Archivos 3D Médicos
+                  </div>
+                </div>
+                <div class="history-date">27/09/2025 · 11:18</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vista registro -->
+          <div class="view" id="view-registro">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Registro en la plataforma</div>
+                <div class="panel-sub">
+                  Maqueta de la interfaz para técnicos biomédicos.
+                </div>
+              </div>
+            </div>
+
+            <div class="form-card">
+              <div class="form-title">Crear cuenta en Archivos 3D Médicos</div>
+
+              <div class="form-group">
+                <label class="form-label">Nombre completo</label>
+                <input class="form-input" type="text" placeholder="Nombre y apellidos" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Correo institucional</label>
+                <input class="form-input" type="email" placeholder="ejemplo@hospital.mx" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Contraseña</label>
+                <input class="form-input" type="password" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Confirmar contraseña</label>
+                <input class="form-input" type="password" />
+              </div>
+
+              <button class="btn btn-blue" style="width:100%;margin-top:.35rem;">
+                Crear cuenta (demostración)
+              </button>
+
+              <div class="form-footer">
+                Al registrarte aceptas que este prototipo se utiliza solo con fines académicos
+                dentro del proyecto de tesis.
+              </div>
+            </div>
+          </div>
+
+          <!-- Vista repositorio “vacía” (para cuando la selecciones) -->
+          <div class="view" id="view-repo">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Repositorio de archivos 3D</div>
+                <div class="panel-sub">
+                  Selecciona una pieza del panel izquierdo para ver su información detallada,
+                  formatos disponibles y dimensiones de referencia.
+                </div>
+              </div>
+              <span class="badge-soft">Vista general</span>
+            </div>
+
+            <div class="section-text">
+              Esta vista resume el funcionamiento de la plataforma: un catálogo de piezas
+              médicas en 3D clasificadas por equipo, material y proceso de fabricación mediante
+              Control Numérico Computacional. Las instituciones de salud pueden descargar
+              los modelos aprobados e integrarlos en su propio flujo de manufactura local.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        Plataforma digital diseñada como parte de la tesis de Ingeniería Biomédica sobre
+        distribución de archivos 3D de piezas médicas para su fabricación mediante Control
+        Numérico Computacional.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Datos de ejemplo para las piezas
+    const piezas = [
+      {
+        id: "conector",
+        nombre: "Conector",
+        material: "ABS",
+        proceso: "Control Numérico Computacional",
+        estado: "Aprobada",
+        dims: "50 × 34 × 24 mm",
+        equipo: "Bomba de infusión",
+        uso: "Unión entre línea de fluido y módulo de bombeo."
+      },
+      {
+        id: "adaptador",
+        nombre: "Adaptador",
+        material: "Nylon",
+        proceso: "Control Numérico Computacional",
+        estado: "Aprobada",
+        dims: "42 × 30 × 22 mm",
+        equipo: "Sistema de oxigenoterapia",
+        uso: "Adaptación entre manguera de oxígeno y puerto del equipo."
+      },
+      {
+        id: "brida",
+        nombre: "Brida",
+        material: "ABS",
+        proceso: "Control Numérico Computacional",
+        estado: "Aprobada",
+        dims: "Ø 60 mm · espesor 8 mm",
+        equipo: "Soporte de monitor",
+        uso: "Fijación mecánica del brazo articulado al chasis del monitor."
+      },
+      {
+        id: "soporte",
+        nombre: "Soporte de sensor",
+        material: "PLA reforzado",
+        proceso: "Control Numérico Computacional",
+        estado: "En validación",
+        dims: "70 × 28 × 18 mm",
+        equipo: "Monitor de signos vitales",
+        uso: "Sujeción del sensor al riel lateral de cama hospitalaria."
+      }
+    ];
+
+    const cardsContainer = document.getElementById("cardsContainer");
+    const piecesCount = document.getElementById("piecesCount");
+    const searchInput = document.getElementById("searchInput");
+
+    const detailTitle = document.getElementById("detailTitle");
+    const detailSubtitle = document.getElementById("detailSubtitle");
+    const detailNameSide = document.getElementById("detailNameSide");
+    const detailMetaSide = document.getElementById("detailMetaSide");
+    const detailDims = document.getElementById("detailDims");
+    const detailEquipo = document.getElementById("detailEquipo");
+    const detailUso = document.getElementById("detailUso");
+
+    function renderCards(filter = "") {
+      cardsContainer.innerHTML = "";
+      const term = filter.trim().toLowerCase();
+
+      const filtered = piezas.filter(p =>
+        p.nombre.toLowerCase().includes(term) ||
+        p.material.toLowerCase().includes(term) ||
+        p.equipo.toLowerCase().includes(term)
+      );
+
+      filtered.forEach(pieza => {
+        const card = document.createElement("article");
+        card.className = "card";
+        card.dataset.id = pieza.id;
+
+        card.innerHTML = `
+          <div class="card-thumb">
+            <div class="card-thumb-shape"></div>
+          </div>
+          <div class="card-name">${pieza.nombre}</div>
+          <div class="card-meta">${pieza.material} · ${pieza.proceso}</div>
+          <div class="status-pill">${pieza.estado}</div>
+        `;
+
+        card.addEventListener("click", () => loadDetail(pieza.id));
+        cardsContainer.appendChild(card);
+      });
+
+      piecesCount.textContent = `${filtered.length} pieza${filtered.length !== 1 ? "s" : ""}`;
+    }
+
+    function loadDetail(id) {
+      const pieza = piezas.find(p => p.id === id);
+      if (!pieza) return;
+
+      detailTitle.textContent = pieza.nombre;
+      detailNameSide.textContent = pieza.nombre;
+      detailSubtitle.textContent = `Material ${pieza.material} · Fabricación mediante ${pieza.proceso}`;
+      detailMetaSide.textContent = `Material: ${pieza.material} · Proceso: ${pieza.proceso}`;
+      detailDims.textContent = pieza.dims;
+      detailEquipo.textContent = pieza.equipo;
+      detailUso.textContent = pieza.uso;
+
+      // Cambiar vista activa a detalle si el usuario está en otra
+      setActiveView("view-detalle");
+    }
+
+    // Buscador
+    searchInput.addEventListener("input", (e) => {
+      renderCards(e.target.value);
+    });
+
+    // Navegación de vistas
+    const navButtons = document.querySelectorAll(".nav button");
+    const views = document.querySelectorAll(".view");
+
+    function setActiveView(id) {
+      views.forEach(v => v.classList.toggle("active", v.id === id));
+      navButtons.forEach(btn =>
+        btn.classList.toggle("active", btn.dataset.view === id)
+      );
+    }
+
+    navButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const viewId = btn.dataset.view;
+        setActiveView(viewId);
+      });
+    });
+
+    // Inicializar
+    renderCards();
+    loadDetail("conector");
+  </script>
+</body>
+</html>
